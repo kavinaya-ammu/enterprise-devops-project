@@ -17,3 +17,15 @@ End-to-end DevSecOps platform using:
 - Oracle Database
 - Prometheus
 - Grafana
+
+## Maven CI Build
+
+The project uses Maven for build and validation.
+
+### Build Commands
+
+mvn clean
+mvn validate
+mvn compile
+mvn test
+mvn package
