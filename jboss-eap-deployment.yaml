@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jboss-eap
+  namespace: jboss-eap
+  labels:
+    app: jboss-eap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jboss-eap
+  template:
+    metadata:
+      labels:
+        app: jboss-eap
+    spec:
+      containers:
+        - name: jboss-eap
+          image: enterprise-devops-jboss:2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: management
+              containerPort: 9990
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
