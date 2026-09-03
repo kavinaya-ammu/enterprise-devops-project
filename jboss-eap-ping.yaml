@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jboss-eap-ping
+  namespace: jboss-eap
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: jboss-eap
+  ports:
+    - name: ping
+      port: 8888
+      targetPort: 8888
+      protocol: TCP

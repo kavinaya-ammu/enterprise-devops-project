@@ -1,0 +1,22 @@
+# Maven build output
+target/
+
+# Java compiled files
+*.class
+
+# Maven backup files
+pom.xml.backup
+pom.xml.jar-backup
+
+# Trivy generated reports
+trivy-*.json
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+*.jar-backup
