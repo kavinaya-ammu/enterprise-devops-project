@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: enterprise-admin-app
+spec:
+  type: ClusterIP
+  selector:
+    app: enterprise-admin-app
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enterprise-admin-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: enterprise-admin-app
+  template:
+    metadata:
+      labels:
+        app: enterprise-admin-app
+    spec:
+      containers:
+        - name: enterprise-admin-app
+          image: charles1984/enterprise-admin-app:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
