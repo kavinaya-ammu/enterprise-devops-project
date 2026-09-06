@@ -1,0 +1,18 @@
+WEBLOGIC PORT MATRIX
+====================
+
+Environment: Development / QA
+Domain: enterprise_domain
+
+Server             Port       Purpose
+------------------------------------------------
+AdminServer         7001       Administration
+ManagedServer1      8001       Application traffic
+ManagedServer2      8002       Application traffic
+ManagedServer3      8003       Application traffic
+
+Cluster:
+Cluster1
+
+Application:
+enterprise-admin-app

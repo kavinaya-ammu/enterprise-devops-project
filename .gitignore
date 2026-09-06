@@ -20,3 +20,8 @@ trivy-*.json
 .DS_Store
 Thumbs.db
 *.jar-backup
+
+# Backup files
+*.backup
+*.v1-backup
+*.jar-backup
