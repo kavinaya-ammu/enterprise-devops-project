@@ -1,0 +1,12 @@
+---
+- name: Illustrative Linux baseline (review before enabling changes)
+  hosts: linux
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Ensure baseline tools are installed on Debian/Ubuntu
+      ansible.builtin.apt:
+        name: [curl, ca-certificates, tar, unzip]
+        state: present
+        update_cache: true
+      when: ansible_os_family == 'Debian'

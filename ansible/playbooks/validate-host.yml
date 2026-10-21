@@ -1,0 +1,18 @@
+---
+- name: Validate Linux host prerequisites without modifying the host
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Show operating system and architecture
+      ansible.builtin.debug:
+        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }} / {{ ansible_architecture }}"
+    - name: Check common tools
+      ansible.builtin.command: "bash -lc 'command -v {{ item }}'"
+      loop: [git, java, mvn, docker, kubectl, terraform, trivy]
+      register: tool_checks
+      changed_when: false
+      failed_when: false
+    - name: Print tool availability
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ 'present' if item.rc == 0 else 'not found' }}"
+      loop: "{{ tool_checks.results }}"

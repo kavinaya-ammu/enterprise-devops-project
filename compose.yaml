@@ -1,0 +1,28 @@
+services:
+  wms-api:
+    build: ./application
+    image: enterprise-wms:1.0.0
+    ports: ["8085:8085"]
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_URL: jdbc:postgresql://postgres:5432/enterprise_wms
+      DB_USERNAME: enterprise_user
+      DB_PASSWORD: ${DB_PASSWORD:-local-demo-only-change-me}
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: enterprise_wms
+      POSTGRES_USER: enterprise_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-local-demo-only-change-me}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["wms-pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U enterprise_user -d enterprise_wms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  wms-pgdata:
