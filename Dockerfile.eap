@@ -1,0 +1,34 @@
+FROM registry.redhat.io/jboss-eap-8/eap81-openjdk17-builder-openshift-rhel9:latest AS builder
+
+ENV GALLEON_PROVISION_FEATURE_PACKS=org.jboss.eap:wildfly-ee-galleon-pack
+ENV GALLEON_PROVISION_LAYERS=datasources-web-server
+ENV GALLEON_PROVISION_CHANNELS=org.jboss.eap.channels:eap-8.1
+
+RUN /usr/local/s2i/assemble
+
+FROM registry.redhat.io/jboss-eap-8/eap81-openjdk17-runtime-openshift-rhel9:latest AS runtime
+
+COPY --from=builder --chown=jboss:root $JBOSS_HOME $JBOSS_HOME
+
+COPY --chown=jboss:root \
+  enterprise-middleware-platform/application/webapp/target/enterprise-admin-app-1.0.war \
+  $JBOSS_HOME/standalone/deployments/
+
+# Install the PostgreSQL JDBC driver as a JBoss module
+COPY --chown=jboss:root \
+  middleware/postgresql/postgresql-42.7.7.jar \
+  $JBOSS_HOME/modules/org/postgresql/main/postgresql-42.7.7.jar
+
+COPY --chown=jboss:root \
+  middleware/postgresql/module.xml \
+  $JBOSS_HOME/modules/org/postgresql/main/module.xml
+
+# Avoid multiple IP addresses from hostname -i
+ENV SERVER_PUBLIC_BIND_ADDRESS=0.0.0.0
+
+RUN chmod -R ug+rwX $JBOSS_HOME
+
+
+
+# Persist EAP datasource configuration; DB_PASSWORD is supplied at runtime
+COPY --chown=jboss:root middleware/eap/standalone.xml $JBOSS_HOME/standalone/configuration/standalone.xml

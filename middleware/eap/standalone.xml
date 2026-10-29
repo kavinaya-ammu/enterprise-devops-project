@@ -1,0 +1,342 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns0:server xmlns:ns0="urn:jboss:domain:20.0" xmlns:ns1="urn:jboss:domain:logging:8.0" xmlns:ns10="urn:jboss:domain:naming:2.0" xmlns:ns11="urn:jboss:domain:remoting:7.0" xmlns:ns12="urn:jboss:domain:request-controller:1.0" xmlns:ns13="urn:jboss:domain:security-manager:1.0" xmlns:ns14="urn:jboss:domain:transactions:6.0" xmlns:ns15="urn:jboss:domain:undertow:14.0" xmlns:ns2="urn:jboss:domain:core-management:1.0" xmlns:ns3="urn:jboss:domain:datasources:7.2" xmlns:ns4="urn:jboss:domain:deployment-scanner:2.0" xmlns:ns5="urn:jboss:domain:ee:6.0" xmlns:ns6="urn:wildfly:elytron:18.0" xmlns:ns7="urn:jboss:domain:io:4.0" xmlns:ns8="urn:jboss:domain:jca:6.0" xmlns:ns9="urn:jboss:domain:jmx:1.3">
+    <ns0:extensions>
+        <ns0:extension module="org.jboss.as.connector" />
+        <ns0:extension module="org.jboss.as.deployment-scanner" />
+        <ns0:extension module="org.jboss.as.ee" />
+        <ns0:extension module="org.jboss.as.jmx" />
+        <ns0:extension module="org.jboss.as.logging" />
+        <ns0:extension module="org.jboss.as.naming" />
+        <ns0:extension module="org.jboss.as.remoting" />
+        <ns0:extension module="org.jboss.as.transactions" />
+        <ns0:extension module="org.wildfly.extension.core-management" />
+        <ns0:extension module="org.wildfly.extension.elytron" />
+        <ns0:extension module="org.wildfly.extension.io" />
+        <ns0:extension module="org.wildfly.extension.request-controller" />
+        <ns0:extension module="org.wildfly.extension.security.manager" />
+        <ns0:extension module="org.wildfly.extension.undertow" />
+    </ns0:extensions>
+    <ns0:management>
+        <ns0:audit-log>
+            <ns0:formatters>
+                <ns0:json-formatter name="json-formatter" />
+            </ns0:formatters>
+            <ns0:handlers>
+                <ns0:file-handler name="file" formatter="json-formatter" path="audit-log.log" relative-to="jboss.server.data.dir" />
+            </ns0:handlers>
+            <ns0:logger log-boot="true" log-read-only="false" enabled="false">
+                <ns0:handlers>
+                    <ns0:handler name="file" />
+                </ns0:handlers>
+            </ns0:logger>
+        </ns0:audit-log>
+        <ns0:management-interfaces>
+            <ns0:http-interface http-authentication-factory="management-http-authentication" console-enabled="false">
+                <ns0:http-upgrade enabled="true" sasl-authentication-factory="management-sasl-authentication" />
+                <ns0:socket-binding http="management-http" />
+            </ns0:http-interface>
+        </ns0:management-interfaces>
+        <ns0:access-control provider="simple">
+            <ns0:role-mapping>
+                <ns0:role name="SuperUser">
+                    <ns0:include>
+                        <ns0:user name="$local" />
+                    </ns0:include>
+                </ns0:role>
+            </ns0:role-mapping>
+        </ns0:access-control>
+    </ns0:management>
+    <ns0:profile>
+        <ns1:subsystem>
+            <ns1:console-handler name="CONSOLE">
+                <ns1:level name="INFO" />
+                <ns1:formatter>
+                    <ns1:named-formatter name="COLOR-PATTERN" />
+                </ns1:formatter>
+            </ns1:console-handler>
+            <ns1:periodic-rotating-file-handler name="FILE" autoflush="true">
+                <ns1:formatter>
+                    <ns1:named-formatter name="PATTERN" />
+                </ns1:formatter>
+                <ns1:file relative-to="jboss.server.log.dir" path="server.log" />
+                <ns1:suffix value=".yyyy-MM-dd" />
+                <ns1:append value="true" />
+            </ns1:periodic-rotating-file-handler>
+            <ns1:logger category="com.arjuna">
+                <ns1:level name="WARN" />
+            </ns1:logger>
+            <ns1:logger category="com.networknt.schema">
+                <ns1:level name="WARN" />
+            </ns1:logger>
+            <ns1:logger category="io.jaegertracing.Configuration">
+                <ns1:level name="WARN" />
+            </ns1:logger>
+            <ns1:logger category="org.jboss.as.config">
+                <ns1:level name="DEBUG" />
+            </ns1:logger>
+            <ns1:logger category="sun.rmi">
+                <ns1:level name="WARN" />
+            </ns1:logger>
+            <ns1:root-logger>
+                <ns1:level name="INFO" />
+                <ns1:handlers>
+                    <ns1:handler name="CONSOLE" />
+                    <ns1:handler name="FILE" />
+                </ns1:handlers>
+            </ns1:root-logger>
+            <ns1:formatter name="PATTERN">
+                <ns1:pattern-formatter pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n" />
+            </ns1:formatter>
+            <ns1:formatter name="COLOR-PATTERN">
+                <ns1:pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n" />
+            </ns1:formatter>
+        </ns1:subsystem>
+        <ns2:subsystem />
+        <ns3:subsystem>
+            <ns3:datasources>
+                <ns3:datasource jndi-name="java:/jdbc/EnterpriseDB" pool-name="EnterpriseDB" enabled="true">
+                    <ns3:connection-url>jdbc:postgresql://middleware-postgres:5432/enterprise_admin</ns3:connection-url>
+                    <ns3:driver>postgresql</ns3:driver>
+                    <ns3:security user-name="adminapp" password="${env.DB_PASSWORD}" />
+                    <ns3:validation>
+                        <ns3:valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker" />
+                        <ns3:validate-on-match>true</ns3:validate-on-match>
+                    </ns3:validation>
+                </ns3:datasource>
+                <ns3:drivers>
+                    <ns3:driver name="postgresql" module="org.postgresql">
+                        <ns3:driver-class>org.postgresql.Driver</ns3:driver-class>
+                    </ns3:driver>
+                </ns3:drivers>
+            </ns3:datasources>
+        </ns3:subsystem>
+        <ns4:subsystem>
+            <ns4:deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000" runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}" />
+        </ns4:subsystem>
+        <ns5:subsystem>
+            <ns5:spec-descriptor-property-replacement>false</ns5:spec-descriptor-property-replacement>
+            <ns5:concurrent>
+                <ns5:context-services>
+                    <ns5:context-service name="default" jndi-name="java:jboss/ee/concurrency/context/default" />
+                </ns5:context-services>
+                <ns5:managed-thread-factories>
+                    <ns5:managed-thread-factory name="default" jndi-name="java:jboss/ee/concurrency/factory/default" context-service="default" />
+                </ns5:managed-thread-factories>
+                <ns5:managed-executor-services>
+                    <ns5:managed-executor-service name="default" jndi-name="java:jboss/ee/concurrency/executor/default" context-service="default" hung-task-termination-period="0" hung-task-threshold="60000" keepalive-time="5000" />
+                </ns5:managed-executor-services>
+                <ns5:managed-scheduled-executor-services>
+                    <ns5:managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-termination-period="0" hung-task-threshold="60000" keepalive-time="3000" />
+                </ns5:managed-scheduled-executor-services>
+            </ns5:concurrent>
+            <ns5:default-bindings context-service="java:jboss/ee/concurrency/context/default" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default" />
+        </ns5:subsystem>
+        <ns6:subsystem final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+            <ns6:providers>
+                <ns6:aggregate-providers name="combined-providers">
+                    <ns6:providers name="elytron" />
+                    <ns6:providers name="openssl" />
+                </ns6:aggregate-providers>
+                <ns6:provider-loader name="elytron" module="org.wildfly.security.elytron" />
+                <ns6:provider-loader name="openssl" module="org.wildfly.openssl" />
+            </ns6:providers>
+            <ns6:audit-logging>
+                <ns6:file-audit-log name="local-audit" path="audit.log" relative-to="jboss.server.log.dir" format="JSON" />
+            </ns6:audit-logging>
+            <ns6:security-domains>
+                <ns6:security-domain name="ApplicationDomain" default-realm="ApplicationRealm" permission-mapper="default-permission-mapper">
+                    <ns6:realm name="ApplicationRealm" role-decoder="groups-to-roles" />
+                    <ns6:realm name="local" />
+                </ns6:security-domain>
+                <ns6:security-domain name="ManagementDomain" default-realm="ManagementRealm" permission-mapper="default-permission-mapper">
+                    <ns6:realm name="ManagementRealm" role-decoder="groups-to-roles" />
+                    <ns6:realm name="local" role-mapper="super-user-mapper" />
+                </ns6:security-domain>
+            </ns6:security-domains>
+            <ns6:security-realms>
+                <ns6:identity-realm name="local" identity="$local" />
+                <ns6:properties-realm name="ApplicationRealm">
+                    <ns6:users-properties path="application-users.properties" relative-to="jboss.server.config.dir" digest-realm-name="ApplicationRealm" />
+                    <ns6:groups-properties path="application-roles.properties" relative-to="jboss.server.config.dir" />
+                </ns6:properties-realm>
+                <ns6:properties-realm name="ManagementRealm">
+                    <ns6:users-properties path="mgmt-users.properties" relative-to="jboss.server.config.dir" digest-realm-name="ManagementRealm" />
+                    <ns6:groups-properties path="mgmt-groups.properties" relative-to="jboss.server.config.dir" />
+                </ns6:properties-realm>
+            </ns6:security-realms>
+            <ns6:mappers>
+                <ns6:simple-permission-mapper name="default-permission-mapper" mapping-mode="first">
+                    <ns6:permission-mapping>
+                        <ns6:principal name="anonymous" />
+                        <ns6:permission-set name="default-permissions" />
+                    </ns6:permission-mapping>
+                    <ns6:permission-mapping match-all="true">
+                        <ns6:permission-set name="login-permission" />
+                        <ns6:permission-set name="default-permissions" />
+                    </ns6:permission-mapping>
+                </ns6:simple-permission-mapper>
+                <ns6:constant-realm-mapper name="local" realm-name="local" />
+                <ns6:simple-role-decoder name="groups-to-roles" attribute="groups" />
+                <ns6:constant-role-mapper name="super-user-mapper">
+                    <ns6:role name="SuperUser" />
+                </ns6:constant-role-mapper>
+            </ns6:mappers>
+            <ns6:permission-sets>
+                <ns6:permission-set name="login-permission">
+                    <ns6:permission class-name="org.wildfly.security.auth.permission.LoginPermission" />
+                </ns6:permission-set>
+                <ns6:permission-set name="default-permissions">
+                    <ns6:permission class-name="org.wildfly.transaction.client.RemoteTransactionPermission" module="org.wildfly.transaction.client" />
+                </ns6:permission-set>
+            </ns6:permission-sets>
+            <ns6:http>
+                <ns6:http-authentication-factory name="application-http-authentication" security-domain="ApplicationDomain" http-server-mechanism-factory="global">
+                    <ns6:mechanism-configuration>
+                        <ns6:mechanism mechanism-name="BASIC">
+                            <ns6:mechanism-realm realm-name="ApplicationRealm" />
+                        </ns6:mechanism>
+                    </ns6:mechanism-configuration>
+                </ns6:http-authentication-factory>
+                <ns6:http-authentication-factory name="management-http-authentication" security-domain="ManagementDomain" http-server-mechanism-factory="global">
+                    <ns6:mechanism-configuration>
+                        <ns6:mechanism mechanism-name="DIGEST">
+                            <ns6:mechanism-realm realm-name="ManagementRealm" />
+                        </ns6:mechanism>
+                    </ns6:mechanism-configuration>
+                </ns6:http-authentication-factory>
+                <ns6:provider-http-server-mechanism-factory name="global" />
+            </ns6:http>
+            <ns6:sasl>
+                <ns6:sasl-authentication-factory name="application-sasl-authentication" sasl-server-factory="configured" security-domain="ApplicationDomain">
+                    <ns6:mechanism-configuration>
+                        <ns6:mechanism mechanism-name="JBOSS-LOCAL-USER" realm-mapper="local" />
+                        <ns6:mechanism mechanism-name="DIGEST-MD5">
+                            <ns6:mechanism-realm realm-name="ApplicationRealm" />
+                        </ns6:mechanism>
+                    </ns6:mechanism-configuration>
+                </ns6:sasl-authentication-factory>
+                <ns6:sasl-authentication-factory name="management-sasl-authentication" sasl-server-factory="configured" security-domain="ManagementDomain">
+                    <ns6:mechanism-configuration>
+                        <ns6:mechanism mechanism-name="JBOSS-LOCAL-USER" realm-mapper="local" />
+                        <ns6:mechanism mechanism-name="DIGEST-MD5">
+                            <ns6:mechanism-realm realm-name="ManagementRealm" />
+                        </ns6:mechanism>
+                    </ns6:mechanism-configuration>
+                </ns6:sasl-authentication-factory>
+                <ns6:configurable-sasl-server-factory name="configured" sasl-server-factory="elytron">
+                    <ns6:properties>
+                        <ns6:property name="wildfly.sasl.local-user.default-user" value="$local" />
+                        <ns6:property name="wildfly.sasl.local-user.challenge-path" value="${jboss.server.temp.dir}/auth" />
+                    </ns6:properties>
+                </ns6:configurable-sasl-server-factory>
+                <ns6:mechanism-provider-filtering-sasl-server-factory name="elytron" sasl-server-factory="global">
+                    <ns6:filters>
+                        <ns6:filter provider-name="WildFlyElytron" />
+                    </ns6:filters>
+                </ns6:mechanism-provider-filtering-sasl-server-factory>
+                <ns6:provider-sasl-server-factory name="global" />
+            </ns6:sasl>
+            <ns6:tls>
+                <ns6:key-stores>
+                    <ns6:key-store name="applicationKS">
+                        <ns6:credential-reference clear-text="password" />
+                        <ns6:implementation type="JKS" />
+                        <ns6:file path="application.keystore" relative-to="jboss.server.config.dir" />
+                    </ns6:key-store>
+                </ns6:key-stores>
+                <ns6:key-managers>
+                    <ns6:key-manager name="applicationKM" key-store="applicationKS" generate-self-signed-certificate-host="localhost">
+                        <ns6:credential-reference clear-text="password" />
+                    </ns6:key-manager>
+                </ns6:key-managers>
+                <ns6:server-ssl-contexts>
+                    <ns6:server-ssl-context name="applicationSSC" key-manager="applicationKM" />
+                </ns6:server-ssl-contexts>
+            </ns6:tls>
+        </ns6:subsystem>
+        <ns7:subsystem default-worker="default">
+            <ns7:worker name="default" />
+        </ns7:subsystem>
+        <ns8:subsystem>
+            <ns8:archive-validation enabled="true" fail-on-error="true" fail-on-warn="false" />
+            <ns8:bean-validation enabled="true" />
+            <ns8:default-workmanager>
+                <ns8:short-running-threads>
+                    <ns8:core-threads count="50" />
+                    <ns8:queue-length count="50" />
+                    <ns8:max-threads count="50" />
+                    <ns8:keepalive-time time="10" unit="seconds" />
+                </ns8:short-running-threads>
+                <ns8:long-running-threads>
+                    <ns8:core-threads count="50" />
+                    <ns8:queue-length count="50" />
+                    <ns8:max-threads count="50" />
+                    <ns8:keepalive-time time="10" unit="seconds" />
+                </ns8:long-running-threads>
+            </ns8:default-workmanager>
+            <ns8:cached-connection-manager />
+        </ns8:subsystem>
+        <ns9:subsystem>
+            <ns9:expose-resolved-model />
+            <ns9:expose-expression-model />
+            <ns9:remoting-connector />
+        </ns9:subsystem>
+        <ns10:subsystem />
+        <ns11:subsystem>
+            <ns11:endpoint worker="default" />
+            <ns11:http-connector name="http-remoting-connector" connector-ref="default" sasl-authentication-factory="application-sasl-authentication" />
+        </ns11:subsystem>
+        <ns12:subsystem />
+        <ns13:subsystem>
+            <ns13:deployment-permissions>
+                <ns13:maximum-set>
+                    <ns13:permission class="java.security.AllPermission" />
+                </ns13:maximum-set>
+            </ns13:deployment-permissions>
+        </ns13:subsystem>
+        <ns14:subsystem>
+            <ns14:core-environment node-identifier="${jboss.tx.node.id:1}">
+                <ns14:process-id>
+                    <ns14:uuid />
+                </ns14:process-id>
+            </ns14:core-environment>
+            <ns14:recovery-environment socket-binding="txn-recovery-environment" status-socket-binding="txn-status-manager" />
+            <ns14:coordinator-environment statistics-enabled="${wildfly.transactions.statistics-enabled:${wildfly.statistics-enabled:false}}" />
+            <ns14:object-store path="tx-object-store" relative-to="jboss.server.data.dir" />
+        </ns14:subsystem>
+        <ns15:subsystem default-virtual-host="default-host" default-servlet-container="default" default-server="default-server" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
+            <ns15:byte-buffer-pool name="default" />
+            <ns15:buffer-cache name="default" />
+            <ns15:server name="default-server">
+                <ns15:http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true" />
+                <ns15:host name="default-host" alias="localhost">
+                    <ns15:http-invoker http-authentication-factory="application-http-authentication" />
+                </ns15:host>
+            </ns15:server>
+            <ns15:servlet-container name="default">
+                <ns15:jsp-config />
+                <ns15:websockets />
+            </ns15:servlet-container>
+            <ns15:application-security-domains>
+                <ns15:application-security-domain name="other" security-domain="ApplicationDomain" />
+            </ns15:application-security-domains>
+        </ns15:subsystem>
+    </ns0:profile>
+    <ns0:interfaces>
+        <ns0:interface name="management">
+            <ns0:inet-address value="${jboss.bind.address.management:127.0.0.1}" />
+        </ns0:interface>
+        <ns0:interface name="public">
+            <ns0:inet-address value="${jboss.bind.address:127.0.0.1}" />
+        </ns0:interface>
+    </ns0:interfaces>
+    <ns0:socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
+        <ns0:socket-binding name="ajp" port="${jboss.ajp.port:8009}" />
+        <ns0:socket-binding name="http" port="${jboss.http.port:8080}" />
+        <ns0:socket-binding name="https" port="${jboss.https.port:8443}" />
+        <ns0:socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}" />
+        <ns0:socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}" />
+        <ns0:socket-binding name="txn-recovery-environment" port="4712" />
+        <ns0:socket-binding name="txn-status-manager" port="4713" />
+    </ns0:socket-binding-group>
+</ns0:server>
