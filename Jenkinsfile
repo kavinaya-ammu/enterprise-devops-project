@@ -25,13 +25,14 @@ pipeline {
                     sh '''
                         set +x
                         set -eu
-                        mvn -B -DskipTests clean test-compile
+                        mvn -B clean verify
                         SONAR_HOST_URL=http://sonarqube:9000 sonar-scanner \\
                             -Dsonar.projectKey=enterprise-devops-app \\
                             -Dsonar.sources=src/main/java \\
                             -Dsonar.tests=src/test/java \\
                             -Dsonar.java.binaries=target/classes \\
                             -Dsonar.java.test.binaries=target/test-classes \\
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                             -Dsonar.qualitygate.wait=true
                     '''
                 }
