@@ -26,7 +26,9 @@ pipeline {
                     sh '''
                         set +x
                         set -eu
-                        trap 'docker logout >/dev/null 2>&1 || true' EXIT
+                        umask 077
+                        export DOCKER_CONFIG="$(mktemp -d)"
+                        trap 'docker logout >/dev/null 2>&1 || true; rm -rf "$DOCKER_CONFIG"' EXIT
                         IMAGE="$IMAGE_REPO:$BUILD_NUMBER"
                         printf '%s' "$DOCKERHUB_TOKEN" |
                             docker login --username "$DOCKERHUB_USER" --password-stdin
