@@ -1,0 +1,10 @@
+.git
+.gitignore
+target/
+*.log
+*.pid
+*.bak
+trivy*.json
+charles.txt
+hello.txt
+hellloooooo
