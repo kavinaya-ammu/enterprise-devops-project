@@ -16,6 +16,28 @@ pipeline {
     }
 
     stages {
+        stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(
+                    credentialsId: 'sonarqube-project-token',
+                    variable: 'SONAR_TOKEN'
+                )]) {
+                    sh '''
+                        set +x
+                        set -eu
+                        mvn -B -DskipTests clean test-compile
+                        SONAR_HOST_URL=http://sonarqube:9000 sonar-scanner \\
+                            -Dsonar.projectKey=enterprise-devops-app \\
+                            -Dsonar.sources=src/main/java \\
+                            -Dsonar.tests=src/test/java \\
+                            -Dsonar.java.binaries=target/classes \\
+                            -Dsonar.java.test.binaries=target/test-classes \\
+                            -Dsonar.qualitygate.wait=true
+                    '''
+                }
+            }
+        }
+
         stage('Build and push image') {
             steps {
                 withCredentials([usernamePassword(
